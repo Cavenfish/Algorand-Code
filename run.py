@@ -23,9 +23,11 @@ def tradeLevels(kind):
     
     #Trade
     if kind == 'buyPrices':
-        gbot.buy(amount)
+        pass
+        #gbot.buy(amount)
     else:
-        gbot.sell(amount)
+        pass
+        #gbot.sell(amount)
 
     #Update pairs database
     pair[kind] = keep
@@ -37,14 +39,13 @@ def trade(kind):
         else:
             return acct.getBalance()
     
+    #Get tkn to trade, price multiplier and bal
     p   = pair['profit']
     tkn = tknA if kind == 'buy' else tknB
     mul = 1+p if kind == 'buy' else 1-p 
-    print(tkn)
-    print(mul)
+    b4  = getBal()
 
-    b4 = getBal()
-
+    #Trade token
     if kind == 'buy':
         pass
         #gbot.buy(pair['buySize'])
@@ -52,9 +53,22 @@ def trade(kind):
         pass
         #gbot.sell(pair['sellSize'])
 
+    #Get and store level from trade
     size = getBal() - b4
     levl = price * mul
     pair[f'{kind}Prices'].append([levl, size])
+
+def scale(kind):
+    n = len(pair[kind])
+    if n >= 15: return 1
+    
+    if n <= 10:
+        m = 0.075 * (n / 10)
+    else:
+        m = (0.1 * ((n-10) / 5)) + 0.095
+    
+    c = 1.005+m if kind == 'buyPrices' else 0.995-m
+    return c
 
 with open(fname, 'r') as stream:
     pairs = list(yaml.safe_load_all(stream))
@@ -62,9 +76,22 @@ with open(fname, 'r') as stream:
 for pair in pairs:
     tknA  = pair['tokenA']['id']
     tknB  = pair['tokenB']['id']
-    gbot = pb.GridBot(acct, tknA, tknB)
+    gPri  = pair['gridPrice']
+    gbot  = pb.GridBot(acct, tknA, tknB)
     price = gbot.getPrice()
-    trade('buy')
-    trade('sell')
-    #saveYAML(pairs)
+    
+    if price > gPri * scale('buyPrices'):
+        trade('sell')
+    else if price < gPri * scale('sellPrices'):
+        trade('buy')
+    else:
+        pass
+
+    saveYAML(pairs)
+    tradeLevels('buyPrices')
+    tradeLevels('sellPrices')
+    
+    if (price > gPri * 1.2) or (price < gPri * 0.8):
+        pair['gridPrice'] = price
+    saveYAML(pairs)
 
