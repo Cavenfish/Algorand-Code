@@ -1,5 +1,6 @@
 import sys
-sys.path.append('./tinyman-py-sdk/')
+from .config import *
+sys.path.append(cfg.tinyPath)
 
 from tinyman.v1.client import TinymanClient
 
@@ -8,7 +9,7 @@ class GridBot:
 
     def __init__(self, acct, tknA, tknB):
         self.acct = acct
-        self.tiny = TinymanClient(acct.client, 552635992, acct.addy)
+        self.tiny = TinymanClient(acct.client, cfg.tinyID, acct.addy)
         self.tknA = self.tiny.fetch_asset(tknA)
         self.mulA = 10 ** self.tknA.decimals
         self.tknB = self.tiny.fetch_asset(tknB)

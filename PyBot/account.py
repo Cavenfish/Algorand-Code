@@ -1,4 +1,5 @@
 import json
+from .config import *
 from algosdk import account, mnemonic
 from algosdk.v2client import algod
 from algosdk.future import transaction
@@ -7,8 +8,7 @@ class Account:
     """Algorand wallet account"""
 
     def __init__(self, privateKey):
-        api         = 'https://node.algoexplorerapi.io'
-        self.client = algod.AlgodClient('', api)
+        self.client = algod.AlgodClient('', cfg.api)
         
         if privateKey:
             self.pk   = privateKey
