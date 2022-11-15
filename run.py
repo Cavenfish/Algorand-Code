@@ -3,10 +3,17 @@ import PyBot as pb
 
 acct   = pb.Account(pb.keys[0])
 fname  = 'pairs.yaml'
+earn   = 'profit.yaml'
 
-def saveYAML(data):
-    with open(fname, 'w') as stream:
+def saveYAML(data, saveName):
+    with open(saveName, 'w') as stream:
         yaml.dump_all(data, stream, sort_keys=False)
+
+def getBal(tkn):
+    if tkn:
+        return acct.getAssetBalance(tkn)
+    else:
+        return acct.getBalance()
 
 def tradeLevels(kind):
     if not pair[kind]: return
@@ -22,6 +29,9 @@ def tradeLevels(kind):
     #Store levels to keep and sum trading amount
     keep   = [x for x in pair[kind] if x not in toTrade]
     amount = sum([i[1] for i in toTrade])
+    tkn    = pair['tokenA'] if kind == 'buyPrices' else pair['tokenB']
+    init   = pair['sellSize'] if kind == 'buyPrices' else pair['buySize']
+    b4     = getBal(tkn['id'])
 
     #Trade
     if kind == 'buyPrices':
@@ -31,21 +41,23 @@ def tradeLevels(kind):
         gbot.sell(amount)
         print('Sell Level Order Submitted\n')
 
+    #Calculate profit
+    income = getBal(tkn['id']) - b4 - init
+
     #Update pairs database
     pair[kind] = keep
 
+    #Update profit database
+    profit['total'][tkn['name']]   += income
+    profit['current'][tkn['name']] += income
+
 def trade(kind):
-    def getBal():
-        if tkn:
-            return acct.getAssetBalance(tkn)
-        else:
-            return acct.getBalance()
 
     #Get tkn to trade, price multiplier and bal
     p   = pair['profit']
     tkn = tknA if kind == 'buy' else tknB
     mul = 1+p if kind == 'buy' else 1-p
-    b4  = getBal()
+    b4  = getBal(tkn)
 
     #Trade token
     if kind == 'buy':
@@ -55,7 +67,7 @@ def trade(kind):
 
 
     #Get and store level from trade
-    size = getBal() - b4
+    size = getBal(tkn) - b4
     levl = price * mul
     key  = 'sell' if kind == 'buy' else 'buy'
     pair[f'{key}Prices'].append([levl, size])
@@ -75,6 +87,9 @@ def scale(kind):
 with open(fname, 'r') as stream:
     pairs = list(yaml.safe_load_all(stream))
 
+with open(earn, 'r') as stream:
+    profit = yaml.safe_load(stream)
+
 for pair in pairs:
     tknA  = pair['tokenA']['id']
     tknB  = pair['tokenB']['id']
@@ -91,11 +106,17 @@ for pair in pairs:
     else:
         print('Nothing Was Done\n')
 
-    saveYAML(pairs)
+    saveYAML(pairs, fname)
     tradeLevels('buyPrices')
     tradeLevels('sellPrices')
 
     if (price > gPri * 1.2) or (price < gPri * 0.8):
         pair['gridPrice'] = price
         print('Grid Price Updated\n')
-    saveYAML(pairs)
+    saveYAML(pairs, fname)
+
+    gbot.checkExcess()#Ideally, should make new function
+    #then store redeamed amounts in profit.yaml
+
+with open(earn, 'w') as stream:
+    yaml.dump(profit, stream, sort_keys=False)
