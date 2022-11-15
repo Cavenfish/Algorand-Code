@@ -32,7 +32,7 @@ class GridBot:
 
     def getPrice(self):
         tknIn = self.tknA(self.mulA)
-        quote = self.pool.fetch_fixed_input_swap_quote(tknIn, slippage=0.01)
+        quote = self.pool.fetch_fixed_input_swap_quote(tknIn, slippage=0.001)
         price = quote.amount_out.amount / self.mulB
         return price
 
@@ -46,13 +46,13 @@ class GridBot:
 
     def buy(self, amount):
         tknIn = self.tknB(amount * self.mulB)
-        quote = self.pool.fetch_fixed_input_swap_quote(tknIn, slippage=0.01)
+        quote = self.pool.fetch_fixed_input_swap_quote(tknIn, slippage=0.001)
         gTxn  = self.pool.prepare_swap_transactions_from_quote(quote)
         self.executeTxn(gTxn)
 
     def sell(self, amount):
         tknIn = self.tknA(amount * self.mulA)
-        quote = self.pool.fetch_fixed_input_swap_quote(tknIn, slippage=0.01)
+        quote = self.pool.fetch_fixed_input_swap_quote(tknIn, slippage=0.001)
         gTxn  = self.pool.prepare_swap_transactions_from_quote(quote)
         self.executeTxn(gTxn)
 
