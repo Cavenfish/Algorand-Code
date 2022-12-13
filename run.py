@@ -42,7 +42,7 @@ def tradeLevels(kind):
         print('Sell Level Order Submitted\n')
 
     #Calculate profit
-    income = getBal(tkn['id']) - b4 - init
+    income = getBal(tkn['id']) - b4 - (init * len(toTrade))
 
     #Update pairs database
     pair[kind] = keep
@@ -74,7 +74,7 @@ def trade(kind):
 
 def scale(kind):
     n = len(pair[kind])
-    if n >= 15: return 1
+    if n >= 15: return 1e5 if kind == 'buyPrices' else 0
 
     if n <= 10:
         m = 0.075 * (n / 10)
