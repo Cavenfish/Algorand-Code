@@ -23,6 +23,9 @@ class GridBot:
     def checkExcess(self):
         ex   = self.pool.fetch_excess_amounts()
 
+        if not ex:
+            return
+
         if (ex[self.tknA] > 1e6) and (ex[self.tknB] >  0.25e6):
             self.collectExcess(ex)
             print('\nAssets Redeamed\n')
