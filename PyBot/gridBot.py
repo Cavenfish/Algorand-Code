@@ -26,6 +26,9 @@ class GridBot:
         if not ex:
             return
 
+        if len(ex) < 2:
+            return
+
         if (ex[self.tknA] > 1e6) and (ex[self.tknB] >  0.25e6):
             self.collectExcess(ex)
             print('\nAssets Redeamed\n')
