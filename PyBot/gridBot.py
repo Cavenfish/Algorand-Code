@@ -23,9 +23,11 @@ class GridBot:
     def checkExcess(self):
         ex   = self.pool.fetch_excess_amounts()
 
-        if (ex[self.tknA] > self.mulA) and (ex[self.tknB] >  self.mulB):
+        if (ex[self.tknA] > 1e6) and (ex[self.tknB] >  0.25e6):
             self.collectExcess(ex)
-            print('Assets Redeamed')
+            print('\nAssets Redeamed\n')
+            amt = [ex[i].amount*1e-6 for i in ex]
+            return amt
 
     def viewLastTrade(self):
         return self.last
@@ -57,6 +59,7 @@ class GridBot:
         self.executeTxn(gTxn)
 
     def collectExcess(self, excess):
-        for amount in excess:
-            gTxn = self.pool.prepare_redeem_transactions(amount)
+        for i in excess:
+            amt  = excess[i]
+            gTxn = self.pool.prepare_redeem_transactions(amt)
             self.executeTxn(gTxn)

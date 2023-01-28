@@ -84,6 +84,16 @@ def scale(kind):
     c = 1.005+m if kind == 'buyPrices' else 0.995-m
     return c
 
+def maybeRedeam(tknA, tknB):
+    amt = gbot.checkExcess()
+    if amt:
+        #Update profit database
+        profit['total'][tknA['name']]   += amt[0]
+        profit['current'][tknA['name']] += amt[0]
+        profit['total'][tknB['name']]   += amt[1]
+        profit['current'][tknB['name']] += amt[1]
+    return
+
 with open(fname, 'r') as stream:
     pairs = list(yaml.safe_load_all(stream))
 
@@ -113,10 +123,9 @@ for pair in pairs:
     if (price > gPri * 1.2) or (price < gPri * 0.8):
         pair['gridPrice'] = price
         print('Grid Price Updated\n')
-    saveYAML(pairs, fname)
 
-    gbot.checkExcess()#Ideally, should make new function
-    #then store redeamed amounts in profit.yaml
+    maybeRedeam(tknA, tknB)
+    saveYAML(pairs, fname)
 
 with open(earn, 'w') as stream:
     yaml.dump(profit, stream, sort_keys=False)
