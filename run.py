@@ -45,7 +45,7 @@ def tradeLevels(kind):
     income = getBal(tkn['id']) - b4 - (init * len(toTrade))
     if income < 0.0:
         #Very hacky solution to new trade size being added
-        #once all old trades are cleared this should be 
+        #once all old trades are cleared this should be
         #removed (should be obvious by looking at pairs.yaml)
         income = getBal(tkn['id']) - b4 - ((init / 3) * len(toTrade))
 
@@ -90,6 +90,8 @@ def scale(kind):
     return c
 
 def maybeRedeam(tknA, tknB):
+    if gbot.tiny.version == 'v2': return
+
     amt = gbot.checkExcess()
     if amt:
         #Update profit database

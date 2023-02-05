@@ -3,18 +3,34 @@ from .config import *
 sys.path.append(cfg.tinyPath)
 
 from tinyman.v1.client import TinymanClient
+from tinyman.v2.client import TinymanV2Client
 
 class GridBot:
     """Algorand GridBot"""
 
     def __init__(self, acct, tknA, tknB):
         self.acct = acct
-        self.tiny = TinymanClient(acct.client, cfg.tinyID, acct.addy)
+        self.tiny = TinymanClient(acct.client, cfg.tinyIDv1, acct.addy)
         self.tknA = self.tiny.fetch_asset(tknA)
         self.mulA = 10 ** self.tknA.decimals
         self.tknB = self.tiny.fetch_asset(tknB)
         self.mulB = 10 ** self.tknB.decimals
-        self.pool = self.tiny.fetch_pool(self.tknA, self.tknB)
+        self.pickPool()
+
+    def pickPool(self):
+        tinyV1 = TinymanClient(self.acct.client, cfg.tinyIDv1, self.acct.addy)
+        tinyV2 = TinymanV2Client(self.acct.client, cfg.tinyIDv2, self.acct.addy)
+        v1Pool = tinyV1.fetch_pool(self.tknA, self.tknB)
+        v2Pool = tinyV2.fetch_pool(self.tknA, self.tknB)
+        v1TVL  = v1Pool.info()['asset1_reserves']
+        v2TVL  = v2Pool.info()['asset_1_reserves']
+
+        if v1TVL > v2TVL:
+            self.tiny = tinyV1
+            self.pool = v1Pool
+        else:
+            self.tiny = tinyV2
+            self.pool = v2Pool
 
     def viewExcess(self):
         excess = self.pool.fetch_excess_amounts()
