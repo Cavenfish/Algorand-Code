@@ -1,13 +1,13 @@
 import yaml, sys
 import PyBot as pb
+from glob import glob
 
 acct   = pb.Account(pb.keys[0])
-fname  = 'pairs.yaml'
 earn   = 'profit.yaml'
 
 def saveYAML(data, saveName):
     with open(saveName, 'w') as stream:
-        yaml.dump_all(data, stream, sort_keys=False)
+        yaml.dump(data, stream, sort_keys=False)
 
 def getBal(tkn):
     if tkn:
@@ -101,13 +101,14 @@ def maybeRedeam(tknA, tknB):
         profit['current'][tknB['name']] += amt[1]
     return
 
-with open(fname, 'r') as stream:
-    pairs = list(yaml.safe_load_all(stream))
-
 with open(earn, 'r') as stream:
     profit = yaml.safe_load(stream)
 
-for pair in pairs:
+for fname in glob('Pairs/*.yaml'):
+
+    with open(fname, 'r') as stream:
+        pair = yaml.safe_load(stream)
+
     tknA  = pair['tokenA']['id']
     tknB  = pair['tokenB']['id']
     gPri  = pair['gridPrice']
@@ -123,7 +124,7 @@ for pair in pairs:
     else:
         print('Nothing Was Done\n')
 
-    saveYAML(pairs, fname)
+    saveYAML(pair, fname)
     tradeLevels('buyPrices')
     tradeLevels('sellPrices')
 
@@ -132,7 +133,7 @@ for pair in pairs:
         print('Grid Price Updated\n')
 
     maybeRedeam(tknA, tknB)
-    saveYAML(pairs, fname)
+    saveYAML(pair, fname)
 
 with open(earn, 'w') as stream:
     yaml.dump(profit, stream, sort_keys=False)
