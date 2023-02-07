@@ -1,6 +1,7 @@
 import sys
 from .config import *
 sys.path.append(cfg.tinyPath)
+from tinyman.assets import AssetAmount
 
 from tinyman.v1.client import TinymanClient
 from tinyman.v2.client import TinymanV2Client
@@ -69,14 +70,20 @@ class GridBot:
         self.executeTxn(gTxn)
 
     def buy(self, amount):
-        tknIn = self.tknB(amount * self.mulB)
-        quote = self.pool.fetch_fixed_input_swap_quote(tknIn, slippage=0.001)
-        gTxn  = self.pool.prepare_swap_transactions_from_quote(quote)
+        if self.tiny.version == 'v2':
+            tknIn = AssetAmount(self.tknB, int(amount * self.mulB))
+        else:
+            tknIn = self.tknB(amount * self.mulB)
+        quote = self.pool.fetch_fixed_input_swap_quote(tknIn, slippage=0.005)
+        gTxn  = self.pool.prepare_swap_transactions_from_quote(quote=quote)
         self.executeTxn(gTxn)
 
     def sell(self, amount):
-        tknIn = self.tknA(amount * self.mulA)
-        quote = self.pool.fetch_fixed_input_swap_quote(tknIn, slippage=0.001)
+        if self.tiny.version == 'v2':
+            tknIn = AssetAmount(self.tknA, int(amount * self.mulA))
+        else:
+            tknIn = self.tknA(amount * self.mulA)
+        quote = self.pool.fetch_fixed_input_swap_quote(tknIn, slippage=0.005)
         gTxn  = self.pool.prepare_swap_transactions_from_quote(quote)
         self.executeTxn(gTxn)
 

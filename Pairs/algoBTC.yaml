@@ -1,0 +1,15 @@
+name: Algo/goBTC
+tokenA:
+  name: Algo
+  id: 0
+tokenB:
+  name: goBTC
+  id: 386192725
+profit: 0.03
+buySize: 6.0e-05
+sellSize: 6
+gridPrice: 1.203e-05
+buyPrices: []
+sellPrices:
+- - 1.23909e-05
+  - 4.953282999999999

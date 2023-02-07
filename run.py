@@ -109,6 +109,7 @@ for fname in glob('Pairs/*.yaml'):
     with open(fname, 'r') as stream:
         pair = yaml.safe_load(stream)
 
+    name  = pair['name']
     tknA  = pair['tokenA']['id']
     tknB  = pair['tokenB']['id']
     gPri  = pair['gridPrice']
@@ -117,12 +118,12 @@ for fname in glob('Pairs/*.yaml'):
 
     if price > gPri * scale('buyPrices'):
         trade('sell')
-        print('Sell Order Submitted\n')
+        print(f'{name}: Sell Order Submitted\n')
     elif price < gPri * scale('sellPrices'):
         trade('buy')
-        print('Buy Order Submitted\n')
+        print(f'{name}: Buy Order Submitted\n')
     else:
-        print('Nothing Was Done\n')
+        print(f'{name}: Nothing Was Done\n')
 
     saveYAML(pair, fname)
     tradeLevels('buyPrices')
@@ -130,7 +131,7 @@ for fname in glob('Pairs/*.yaml'):
 
     if (price > gPri * 1.2) or (price < gPri * 0.8):
         pair['gridPrice'] = price
-        print('Grid Price Updated\n')
+        print(f'{name}: Grid Price Updated\n')
 
     maybeRedeam(tknA, tknB)
     saveYAML(pair, fname)
