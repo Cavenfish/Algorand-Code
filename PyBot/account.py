@@ -9,7 +9,7 @@ class Account:
 
     def __init__(self, privateKey):
         self.client = algod.AlgodClient('', cfg.api)
-        
+
         if privateKey:
             self.pk   = privateKey
             self.addy = account.address_from_private_key(privateKey)
@@ -27,7 +27,7 @@ class Account:
         mul = 10 ** (- tmp['decimals'])
         bal = bal * mul
         return bal
-    
+
     def viewLastTxn(self):
         tmp = json.dumps(self.last, indent=2)
         print(tmp)
@@ -42,16 +42,20 @@ class Account:
 
     def transfer(self, to, amount):
         sp   = self.client.suggested_params()
-        uTxn = transaction.PaymentTxn(self.addy, sp, to, amount)
+        amt  = int(amount * 1e6)
+        uTxn = transaction.PaymentTxn(self.addy, sp, to, amt)
         self.executeTxn(uTxn)
 
     def transferASA(self, to, amount, ASA):
+        tmp  = self.client.asset_info(ASA)['params']
+        mul  = 10 ** (tmp['decimals'])
+        amt  = int(amount * mul)
         sp   = self.client.suggested_params()
-        uTxn = transaction.AssetTransferTxn(self.addy, sp, to, amount, ASA)
+        uTxn = transaction.AssetTransferTxn(self.addy, sp, to, amt, ASA)
         self.executeTxn(uTxn)
 
     def closeAccount(self, to):
-        sp   = self.client.suggested_params() 
+        sp   = self.client.suggested_params()
         uTxn = transaction.PaymentTxn(self.addy, sp, to, 0, close_remainder_to=to)
         self.executeTxn(uTxn)
 
@@ -64,4 +68,3 @@ class Account:
         sp   = self.client.suggested_params()
         uTxn = transaction.AssetCloseOutTxn(self.addy, sp, to, ASA)
         self.executeTxn(uTxn)
-

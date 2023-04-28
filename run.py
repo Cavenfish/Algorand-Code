@@ -36,10 +36,10 @@ def tradeLevels(kind):
     #Trade
     if kind == 'buyPrices':
         gbot.buy(amount)
-        print('Buy Level Order Submitted\n')
+        print(f'{name}: Buy Level Order Submitted\n')
     else:
         gbot.sell(amount)
-        print('Sell Level Order Submitted\n')
+        print(f'{name}: Sell Level Order Submitted\n')
 
     #Calculate profit
     income = getBal(tkn['id']) - b4 - (init * len(toTrade))
