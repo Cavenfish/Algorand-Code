@@ -2,7 +2,7 @@ import json
 from .config import *
 from algosdk import account, mnemonic
 from algosdk.v2client import algod
-from algosdk.future import transaction
+from algosdk import transaction
 
 class Account:
     """Algorand wallet account"""
