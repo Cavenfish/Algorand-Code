@@ -1,0 +1,15 @@
+name: goETH/goBTC
+tokenA:
+  name: goETH
+  id: 386195940
+tokenB:
+  name: goBTC
+  id: 386192725
+profit: 0.03
+buySize: 0.0001
+sellSize: 0.002
+gridPrice: 0.00095686
+buyPrices:
+- - 0.0009281542
+  - 0.00011695
+sellPrices: []
