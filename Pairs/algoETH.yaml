@@ -1,0 +1,15 @@
+name: Algo/goETH
+tokenA:
+  name: Algo
+  id: 0
+tokenB:
+  name: goETH
+  id: 386195940
+profit: 0.045
+buySize: 0.00192
+sellSize: 18
+gridPrice: 9.055e-05
+buyPrices:
+- - 8.647525e-05
+  - 0.0016280700000000023
+sellPrices: []

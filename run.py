@@ -43,11 +43,6 @@ def tradeLevels(kind):
 
     #Calculate profit
     income = getBal(tkn['id']) - b4 - (init * len(toTrade))
-    if income < 0.0:
-        #Very hacky solution to new trade size being added
-        #once all old trades are cleared this should be
-        #removed (should be obvious by looking at pairs.yaml)
-        income = getBal(tkn['id']) - b4 - ((init / 3) * len(toTrade))
 
     #Update pairs database
     pair[kind] = keep
